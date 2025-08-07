@@ -1,12 +1,11 @@
 """
 This module defines an HTTP-triggered Azure Function using a Blueprint.
 It provides a welcome message that can be personalized with a name.
-It also includes a default template function that responds to HTTP requests.
 """
 import logging
 import azure.functions as func
 
-bp = func.Blueprint()
+bp = func.Blueprint(http_auth_level=func.AuthLevel.FUNCTION)
 
 @bp.route(route="WelcomeMessage", methods=["GET", "POST"]) 
 def welcome_message(req: func.HttpRequest) -> func.HttpResponse:

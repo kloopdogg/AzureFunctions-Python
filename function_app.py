@@ -1,9 +1,10 @@
 """
 # function_app.py
-# This is the main entry point of an Azure Functions project using Python.
+This is the main entry point of an Azure Functions project using Python.
+It registers blueprints containing the actual functions.
 """
 import azure.functions as func
-from sample_http_blueprint import bp
+from blueprint_http_functions import bp
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+app = func.FunctionApp()
 app.register_functions(bp)

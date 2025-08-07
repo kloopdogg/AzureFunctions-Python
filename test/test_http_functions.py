@@ -4,9 +4,9 @@ Unit tests for the welcome_message function.
 import unittest
 import azure.functions as func
 
-from sample_http_blueprint import welcome_message
+from blueprint_http_functions import welcome_message
 
-class TestFunction(unittest.TestCase):
+class TestWelcomeMessage(unittest.TestCase):
     """Unit tests for the welcome_message function."""
 
     def test_welcome_message(self):
