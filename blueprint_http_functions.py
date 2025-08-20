@@ -5,9 +5,10 @@ It provides a welcome message that can be personalized with a name.
 import logging
 import azure.functions as func
 
-bp = func.Blueprint(http_auth_level=func.AuthLevel.FUNCTION)
+bp_http = func.Blueprint(http_auth_level=func.AuthLevel.FUNCTION)
 
-@bp.route(route="WelcomeMessage", methods=["GET", "POST"]) 
+@bp_http.function_name(name="WelcomeMessage")
+@bp_http.route(route="WelcomeMessage", methods=["GET", "POST"]) 
 def welcome_message(req: func.HttpRequest) -> func.HttpResponse:
     """
     HTTP trigger function that returns a welcome message.
@@ -18,10 +19,9 @@ def welcome_message(req: func.HttpRequest) -> func.HttpResponse:
 
     name = req.params.get('name')
     if not name:
-        try:
-            name = req.get_body().decode('utf-8')
-        except ValueError:
-            pass
+        body = req.get_body()
+        if body:
+            name = body.decode('utf-8').strip()
 
     message = "Azure Functions <⚡> are awesome!"
     if name:
