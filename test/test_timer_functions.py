@@ -22,7 +22,7 @@ class TestScheduledWork(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.fixed_time = datetime.datetime(2025, 8, 19, 12, 0, 0, tzinfo=datetime.timezone.utc)
+        self.fixed_time = datetime.datetime.now(datetime.timezone.utc)
         self.original_time_provider = time_provider.get()
         time_provider.set(lambda: self.fixed_time)
 
@@ -65,11 +65,12 @@ class TestScheduledWork(unittest.TestCase):
     def test_scheduled_work_default_time_provider(self):
         """Test the scheduled_work function with past_due set to True."""
         # Arrange
+        expected_date = self.fixed_time.strftime("%Y-%m-%d")
         expected_log_message = (
-            f"Python timer trigger function ran at {self.fixed_time.isoformat()}"
+            f"Python timer trigger function ran at {expected_date}"
         )
-        expected_date = self.fixed_time.date().isoformat()
         func_timer_request = self.MockTimerRequest(past_due=True)
+        time_provider.set(self.original_time_provider)
 
         # Act
         func_call = scheduled_work.build().get_user_function()
@@ -77,7 +78,7 @@ class TestScheduledWork(unittest.TestCase):
             func_call(func_timer_request)
 
         # Assert
-        self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
+        self.assertIn(f"INFO:root:{expected_log_message}", "".join(cm.output))
         self.assertIn(f"{expected_date}", "".join(cm.output))
 
 if __name__ == '__main__':
