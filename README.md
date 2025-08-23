@@ -8,12 +8,22 @@ The recommended folder structure for a Python functions project looks like the f
 ├── .venv/
 ├── .vscode/
 ├── docs/
+├── functions/
+│   ├── blueprint_asb_functions.py
+│   ├── blueprint_http_functions.py
+│   └── blueprint_timer_functions.py
+├── models/
+│   └── model_1.py
 ├── test/
+│   ├── fakes/
+│   │   └── fake_obj_1.py
+│   ├── mocks/
+│   │   └── mock_obj_1.py
 │   ├── test_asb_functions.md
 │   └── test_http_functions.py
+├── utils/
+│   └── util_1.py
 ├── .funcignore
-├── blueprint_asb_functions.py
-├── blueprint_http_functions.py
 ├── function_app.py
 ├── host.json
 ├── local.settings.json
