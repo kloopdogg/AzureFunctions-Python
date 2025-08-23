@@ -5,9 +5,9 @@ It runs every 5 minutes and logs the current UTC timestamp.
 import asyncio
 import logging
 import azure.functions as func
-from time_provider import TimeProvider
+from utils.time_provider import TimeProvider
 
-bp_timer = func.Blueprint(http_auth_level=func.AuthLevel.FUNCTION)
+bp_timer = func.Blueprint()
 
 # Singleton instance
 time_provider = TimeProvider()

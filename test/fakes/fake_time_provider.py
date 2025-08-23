@@ -3,9 +3,9 @@ Unit tests for the TimeProvider class.
 """
 import unittest
 from datetime import datetime, timezone
-from time_provider import TimeProvider
+from utils.time_provider import TimeProvider
 
-class TestTimeProvider(unittest.TestCase):
+class FakeTimeProvider(unittest.TestCase):
     """Test cases for TimeProvider class."""
 
     def setUp(self):

@@ -4,12 +4,12 @@ Unit tests for the welcome_message function.
 import unittest
 import azure.functions as func
 
-from blueprint_http_functions import welcome_message
+from functions.blueprint_http_functions import welcome_message
 
-class TestWelcomeMessage(unittest.TestCase):
+class TestWelcomeMessage(unittest.IsolatedAsyncioTestCase):
     """Unit tests for the welcome_message function."""
 
-    def test_get_empty_request_returns_default_message(self):
+    async def test_get_empty_request_returns_default_message(self):
         """Test that empty GET request returns default message."""
         # Arrange
         req = func.HttpRequest(method="GET",
@@ -21,15 +21,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Azure Functions <⚡> are awesome!')
 
-    def test_get_with_query_returns_custom_message(self):
+    async def test_get_with_query_returns_custom_message(self):
         """Test that GET request with query parameter returns custom message."""
         # Arrange
         name = "Jimmy"
@@ -43,15 +42,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Jimmy, Azure Functions <⚡> are awesome!')
 
-    def test_post_logs_welcome_message_with_query(self):
+    async def test_post_logs_welcome_message_with_query(self):
         """Test that POST request with query parameter logs the welcome message."""
         # Arrange
         name = "Jimmy"
@@ -65,15 +63,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Jimmy, Azure Functions <⚡> are awesome!')
 
-    def test_post_empty_body_returns_default_message(self):
+    async def test_post_empty_body_returns_default_message(self):
         """Test that POST request with empty body returns default message."""
         # Arrange
         req = func.HttpRequest(method="POST",
@@ -85,15 +82,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Azure Functions <⚡> are awesome!')
 
-    def test_post_with_query_returns_custom_message(self):
+    async def test_post_with_query_returns_custom_message(self):
         """Test that POST request with query parameter returns custom message."""
         # Arrange
         name = "Jimmy"
@@ -107,15 +103,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Jimmy, Azure Functions <⚡> are awesome!')
 
-    def test_post_with_body_returns_custom_message(self):
+    async def test_post_with_body_returns_custom_message(self):
         """Test that POST request with body returns custom message."""
         # Arrange
         name = "Jimmy"
@@ -128,15 +123,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Jimmy, Azure Functions <⚡> are awesome!')
 
-    def test_post_with_body_and_query_prefers_query(self):
+    async def test_post_with_body_and_query_prefers_query(self):
         """Test that POST request with both body and query prefers query parameter."""
         # Arrange
         body_name = "John"
@@ -151,15 +145,14 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
         self.assertEqual(resp.get_body().decode('utf-8'), 'Jimmy, Azure Functions <⚡> are awesome!')
 
-    def test_welcome_message(self):
+    async def test_welcome_message(self):
         """Test the welcome_message function."""
         # Arrange
         name = "Jimmy"
@@ -173,9 +166,8 @@ class TestWelcomeMessage(unittest.TestCase):
         )
 
         # Act
-        func_call = welcome_message.build().get_user_function()
         with self.assertLogs(level='INFO') as cm:
-            resp = func_call(req)
+            resp = await welcome_message(req)
 
         # Assert
         self.assertIn(f"INFO:root:{expected_log_message}", cm.output)

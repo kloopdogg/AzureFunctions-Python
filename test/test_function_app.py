@@ -13,5 +13,6 @@ class TestFunctionApp(unittest.TestCase):
         """Test the auth level is set to 'Function'."""
         self.assertEqual(app.auth_level, func.AuthLevel.FUNCTION)
 
+
 if __name__ == '__main__':
     unittest.main()
