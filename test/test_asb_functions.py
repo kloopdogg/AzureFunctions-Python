@@ -43,7 +43,7 @@ class TestProcessQueueMessage(unittest.IsolatedAsyncioTestCase):
 
         # Assert
         self.assertIn("Message Content-Type: application/json", output)
-        self.assertIn('Invalid EventInfo: {"id": "99"}', output)
+        self.assertIn('Invalid SampleInfo: {"id": "99"}', output)
 
     async def test_non_json_message_body(self):
         """Test processing of non-JSON message body."""

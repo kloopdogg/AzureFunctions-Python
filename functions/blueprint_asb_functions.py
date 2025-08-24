@@ -7,7 +7,7 @@ import json
 import asyncio
 from typing import Any
 import azure.functions as func
-from models.event_info import EventInfo
+from models.sample_info import SampleInfo
 
 bp_asb = func.Blueprint()
 
@@ -33,7 +33,7 @@ async def process_queue_message(message: func.ServiceBusMessage) -> None:
     try:
         parsed_body: Any = json.loads(message_body)
 
-        event_info: EventInfo = EventInfo(**parsed_body)
+        event_info: SampleInfo = SampleInfo(**parsed_body)
         logging.info("Processing event: %s (%s)", event_info.name, event_info.id)
 
         # Simulate some work being done
@@ -42,8 +42,8 @@ async def process_queue_message(message: func.ServiceBusMessage) -> None:
         logging.info("Service Bus queue trigger function processed message %s", message.message_id)
 
     except TypeError:
-        # If not a valid EventInfo, log the raw body
-        logging.error("Invalid EventInfo: %s", message_body)
+        # If not a valid SampleInfo, log the raw body
+        logging.error("Invalid SampleInfo: %s", message_body)
 
     except json.JSONDecodeError:
         # If not JSON, log error for invalid JSON
