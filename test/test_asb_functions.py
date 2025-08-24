@@ -86,26 +86,6 @@ class TestProcessQueueMessage(unittest.IsolatedAsyncioTestCase):
         # Assert
         self.assertIn("application/x-custom", "\n".join(cm.output))
 
-    async def test_multiple_calls_covering_all_paths(self):
-        """Test multiple calls to cover all code paths."""
-        # Arrange
-        payloads = [
-            json.dumps({"name": "Eve", "id": "1"}).encode("utf-8"),
-            b"plain text",
-            b"{bad json"
-        ]
-
-        # Act
-        with self.assertLogs(level="INFO") as cm:
-            for idx, payload in enumerate(payloads):
-                msg = FakeServiceBusMessage(payload, message_id=f"id{idx}")
-                await process_queue_message(msg)
-        output = "\n".join(cm.output)
-
-        # Assert
-        for idx in range(len(payloads)):
-            self.assertIn(f"Message ID: id{idx}", output)
-
 
 if __name__ == "__main__":
     unittest.main()

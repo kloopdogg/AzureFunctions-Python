@@ -31,12 +31,15 @@ async def process_queue_message(message: func.ServiceBusMessage) -> None:
     # Get message body - handle both string and JSON content
     message_body: str = message.get_body().decode('utf-8')
     try:
-        # Try to parse as JSON for logging
         parsed_body: Any = json.loads(message_body)
 
-        # Example of deserializing into a Pydantic model (if applicable)
-        event_info: EventInfo = EventInfo(**parsed_body) # type: ignore
+        event_info: EventInfo = EventInfo(**parsed_body)
         logging.info("Processing event: %s (%s)", event_info.name, event_info.id)
+
+        # Simulate some work being done
+        await asyncio.sleep(0.25)
+
+        logging.info("Service Bus queue trigger function processed message %s", message.message_id)
 
     except TypeError:
         # If not a valid EventInfo, log the raw body
@@ -45,8 +48,3 @@ async def process_queue_message(message: func.ServiceBusMessage) -> None:
     except json.JSONDecodeError:
         # If not JSON, log error for invalid JSON
         logging.error("Invalid message body: %s", message_body)
-
-    # Simulate some work being done
-    await asyncio.sleep(0.25)
-
-    logging.info("Service Bus queue trigger function processed message %s", message.message_id)
