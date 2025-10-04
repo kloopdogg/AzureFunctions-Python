@@ -6,6 +6,20 @@
         "isEnabled": true,
         "excludedTypes": "Request"
       }
+    },
+    "logLevel": {
+      "default": "Warning",
+      "Host.Aggregator": "None",
+      "Host.Results": "Error",
+      "Function": "Information",
+      "Function.ProcessQueueMessage": "Information",
+      "Worker.LanguageWorkerConsoleLog": "None",
+      "Azure.Storage.Blobs": "None",
+      "Azure.Storage.Queues": "None",
+      "Azure.Core": "None",
+      "Microsoft.Azure.WebJobs.Extensions.Storage": "None",
+      "DurableTask.AzureStorage": "Error",
+      "Host.Storage": "Error"
     }
   },
   "extensionBundle": {
