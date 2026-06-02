@@ -2,9 +2,9 @@
 This module defines Service Bus-triggered Azure Functions using a Blueprint.
 It processes messages from Service Bus queues.
 """
+import asyncio
 import logging
 import json
-import asyncio
 from typing import Any
 import azure.functions as func
 from models.sample_info import SampleInfo
@@ -25,26 +25,29 @@ async def process_queue_message(message: func.ServiceBusMessage) -> None:
     function execution. If the function fails, the message will be returned to
     the queue for retry processing.
     """
-    logging.info("Message ID: %s", message.message_id)
-    logging.info("Message Content-Type: %s", message.content_type)
+    correlation_id = message.message_id
+    logging.info("[%s] Message Content-Type: %s", correlation_id, message.content_type)
 
-    # Get message body - handle both string and JSON content
     message_body: str = message.get_body().decode('utf-8')
+
+    # Parse JSON first — JSONDecodeError is a ValueError subclass, so keep it separate
+    # from the SampleInfo construction error handling below.
     try:
         parsed_body: Any = json.loads(message_body)
-
-        event_info: SampleInfo = SampleInfo(**parsed_body)
-        logging.info("Processing event: %s (%s)", event_info.name, event_info.id)
-
-        # Simulate some work being done
-        await asyncio.sleep(0.25)
-
-        logging.info("Service Bus queue trigger function processed message %s", message.message_id)
-
-    except TypeError:
-        # If not a valid SampleInfo, log the raw body
-        logging.error("Invalid SampleInfo: %s", message_body)
-
     except json.JSONDecodeError:
-        # If not JSON, log error for invalid JSON
-        logging.error("Invalid message body: %s", message_body)
+        logging.error("[%s] Invalid message body: %s", correlation_id, message_body)
+        return
+
+    try:
+        event_info: SampleInfo = SampleInfo(**parsed_body)
+    except (TypeError, ValueError):
+        # Re-raise so the message is not auto-completed and eventually dead-lettered.
+        logging.error("[%s] Invalid SampleInfo: %s", correlation_id, message_body)
+        raise
+
+    logging.info("[%s] Processing event: %s (%s)", correlation_id, event_info.name, event_info.id)
+
+    # Simulate some work being done
+    await asyncio.sleep(0.25)
+
+    logging.info("[%s] Service Bus queue trigger function processed message", correlation_id)

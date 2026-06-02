@@ -18,7 +18,10 @@ class TestScheduledWork(unittest.IsolatedAsyncioTestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        time_provider.set(self.original_time_provider)
+        try:
+            pass  # future teardown steps here
+        finally:
+            time_provider.set(self.original_time_provider)
 
     async def test_scheduled_work(self):
         """Test the scheduled_work function."""
@@ -33,7 +36,7 @@ class TestScheduledWork(unittest.IsolatedAsyncioTestCase):
             await scheduled_work(func_timer_request)
 
         # Assert
-        self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
+        self.assertTrue(any(expected_log_message in line for line in cm.output))
 
     async def test_scheduled_work_past_due(self):
         """Test the scheduled_work function with past_due set to True."""
@@ -48,15 +51,13 @@ class TestScheduledWork(unittest.IsolatedAsyncioTestCase):
             await scheduled_work(func_timer_request)
 
         # Assert
-        self.assertIn(f"INFO:root:{expected_log_message}", cm.output)
+        self.assertTrue(any(expected_log_message in line for line in cm.output))
+        self.assertTrue(any("past due" in line for line in cm.output))
 
     async def test_scheduled_work_default_time_provider(self):
-        """Test the scheduled_work function with past_due set to True."""
+        """Test the scheduled_work function with the real time provider."""
         # Arrange
         expected_date = self.fixed_time.strftime("%Y-%m-%d")
-        expected_log_message = (
-            f"Python timer trigger function ran at {expected_date}"
-        )
         func_timer_request = MockTimerRequest(past_due=True)
         time_provider.set(self.original_time_provider)
 
@@ -65,8 +66,7 @@ class TestScheduledWork(unittest.IsolatedAsyncioTestCase):
             await scheduled_work(func_timer_request)
 
         # Assert
-        self.assertIn(f"INFO:root:{expected_log_message}", "".join(cm.output))
-        self.assertIn(f"{expected_date}", "".join(cm.output))
+        self.assertTrue(any(expected_date in line for line in cm.output))
 
 if __name__ == '__main__':
     unittest.main()

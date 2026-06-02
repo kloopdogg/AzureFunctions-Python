@@ -25,25 +25,35 @@ class TestProcessQueueMessage(unittest.IsolatedAsyncioTestCase):
         log_output = "\n".join(cm.output)
 
         # Assert
-        self.assertIn("Message ID: mid123", log_output)
         self.assertIn("Message Content-Type: application/json", log_output)
         self.assertIn("Processing event: Test Event (42)", log_output)
-        self.assertIn("Service Bus queue trigger function processed message mid123", log_output)
+        self.assertIn("Service Bus queue trigger function processed message", log_output)
 
-    async def test_json_missing_name_key(self):
-        """Test processing of JSON message missing 'name' key."""
+    async def test_json_missing_name_key_raises(self):
+        """Test that a JSON message missing 'name' key re-raises TypeError for DLQ routing."""
         # Arrange
         msg_body = json.dumps({"id": "99"}).encode("utf-8")
         message = FakeServiceBusMessage(msg_body)
 
-        # Act
-        with self.assertLogs(level="INFO") as cm:
-            await process_queue_message(message)
-        output = "\n".join(cm.output)
+        # Act / Assert — TypeError must propagate so the message is not auto-completed
+        with self.assertLogs(level="ERROR") as cm:
+            with self.assertRaises(TypeError):
+                await process_queue_message(message)
 
-        # Assert
-        self.assertIn("Message Content-Type: application/json", output)
-        self.assertIn('Invalid SampleInfo: {"id": "99"}', output)
+        self.assertTrue(any("Invalid SampleInfo" in line for line in cm.output))
+
+    async def test_json_non_numeric_id_raises(self):
+        """Test that a non-numeric id raises ValueError for DLQ routing."""
+        # Arrange
+        msg_body = json.dumps({"id": "not-a-number", "name": "Test"}).encode("utf-8")
+        message = FakeServiceBusMessage(msg_body)
+
+        # Act / Assert
+        with self.assertLogs(level="ERROR") as cm:
+            with self.assertRaises(ValueError):
+                await process_queue_message(message)
+
+        self.assertTrue(any("Invalid SampleInfo" in line for line in cm.output))
 
     async def test_non_json_message_body(self):
         """Test processing of non-JSON message body."""
@@ -85,6 +95,19 @@ class TestProcessQueueMessage(unittest.IsolatedAsyncioTestCase):
 
         # Assert
         self.assertIn("application/x-custom", "\n".join(cm.output))
+
+    async def test_id_coerced_to_int(self):
+        """Test that a string id in the JSON payload is coerced to int."""
+        # Arrange
+        msg_body = json.dumps({"name": "Test Event", "id": "42"}).encode("utf-8")
+        message = FakeServiceBusMessage(msg_body)
+
+        # Act
+        with self.assertLogs(level="INFO") as cm:
+            await process_queue_message(message)
+
+        # Assert — log shows the int representation (no quotes around 42)
+        self.assertIn("Processing event: Test Event (42)", "\n".join(cm.output))
 
 
 if __name__ == "__main__":
