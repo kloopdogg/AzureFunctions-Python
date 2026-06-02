@@ -7,7 +7,7 @@ invalid JSON, and different content types.
 import json
 import unittest
 
-from fakes.fake_service_bus_message import FakeServiceBusMessage
+from .fakes.fake_service_bus_message import FakeServiceBusMessage
 from functions.blueprint_asb_functions import process_queue_message
 
 class TestProcessQueueMessage(unittest.IsolatedAsyncioTestCase):
