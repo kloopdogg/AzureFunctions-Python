@@ -10,3 +10,6 @@ class SampleInfo:
     """
     id: int
     name: str
+
+    def __post_init__(self):
+        self.id = int(self.id)

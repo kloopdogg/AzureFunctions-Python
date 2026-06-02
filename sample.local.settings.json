@@ -3,6 +3,7 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "python",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "ServiceBusConnection": ""
+    "ServiceBusConnection": "",
+    "ServiceBusConnection__doc": "Format: Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=<policy>;SharedAccessKey=<key>. Required for ProcessQueueMessage trigger — if absent, the trigger silently fails to bind at startup."
   }
 }

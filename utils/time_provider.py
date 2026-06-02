@@ -19,6 +19,10 @@ class TimeProvider:
         """Get the current time provider function."""
         return self.provider
 
+    def now(self):
+        """Return the current time by invoking the provider."""
+        return self.provider()
+
     def set(self, provider):
         """Set the time provider function.
         
