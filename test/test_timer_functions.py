@@ -4,7 +4,7 @@ Unit tests for the welcome_message function.
 import datetime
 import unittest
 
-from mocks.mock_timer_request import MockTimerRequest
+from .mocks.mock_timer_request import MockTimerRequest
 from functions.blueprint_timer_functions import scheduled_work, time_provider
 
 class TestScheduledWork(unittest.IsolatedAsyncioTestCase):
